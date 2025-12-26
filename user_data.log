@@ -1,0 +1,19 @@
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 102-914-367
+INFO:werkzeug: * Detected change in 'C:\\Users\\sacig\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\datetime.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\sacig\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\_pydatetime.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\sacig\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\blueprints.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\sacig\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\sansio\\blueprints.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\sacig\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\utils.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\sacig\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\_internal.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
