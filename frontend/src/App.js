@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
@@ -23,6 +23,9 @@ function App() {
   const [error, setError] = useState('');
   const [modelInfo, setModelInfo] = useState(null);
   const [showAllModels, setShowAllModels] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageData, setImageData] = useState(null);
+  const [cvMode, setCvMode] = useState(false);
 
   const API_URL = 'http://localhost:5000/api';
 
@@ -47,6 +50,24 @@ function App() {
     });
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Preview image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setImageData(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setImageData(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -54,12 +75,32 @@ function App() {
     setResult(null);
 
     try {
+      let payload;
+      
+      if (cvMode && imageData) {
+        // CV Mode: Only image required, optional height/weight for calibration
+        payload = {
+          image: imageData,
+          Height: formData.Height || null,
+          Weight: formData.Weight || null
+        };
+      } else if (imageData && !cvMode) {
+        // Hybrid mode: Image + manual measurements
+        payload = {
+          ...formData,
+          image: imageData
+        };
+      } else {
+        // Manual mode: All measurements required
+        payload = formData;
+      }
+
       const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -68,7 +109,7 @@ function App() {
         throw new Error(data.error || 'Prediction failed');
       }
 
-      console.log('API Response:', data); // Debug log
+      console.log('API Response:', data);
       setResult(data);
     } catch (err) {
       setError(err.message);
@@ -111,54 +152,155 @@ function App() {
         </header>
 
         <form onSubmit={handleSubmit} className="prediction-form">
-          <div className="form-section">
-            <h3>📊 Basic Information</h3>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Age (years)</label>
+          
+          {/* NEW: Image Upload Section */}
+          <div className="form-section image-upload-section">
+            <h3>📸 Body Photo Analysis</h3>
+            
+            <div className="cv-mode-toggle">
+              <label className="toggle-label">
                 <input
-                  type="number"
-                  name="Age"
-                  value={formData.Age}
-                  onChange={handleChange}
-                  required
-                  min="1"
-                  max="120"
-                  step="1"
-                  placeholder="e.g., 25"
+                  type="checkbox"
+                  checked={cvMode}
+                  onChange={(e) => setCvMode(e.target.checked)}
                 />
-              </div>
-              <div className="form-group">
-                <label>Weight (lbs)</label>
-                <input
-                  type="number"
-                  name="Weight"
-                  value={formData.Weight}
-                  onChange={handleChange}
-                  required
-                  min="1"
-                  step="0.1"
-                  placeholder="e.g., 154.25"
-                />
-              </div>
-              <div className="form-group">
-                <label>Height (inches)</label>
-                <input
-                  type="number"
-                  name="Height"
-                  value={formData.Height}
-                  onChange={handleChange}
-                  required
-                  min="1"
-                  step="0.1"
-                  placeholder="e.g., 67.75"
-                />
-              </div>
+                <span className="toggle-text">
+                  {cvMode ? '🤖 AI Vision Mode (Photo Only)' : '📝 Manual + Photo Mode'}
+                </span>
+              </label>
+              <p className="mode-description">
+                {cvMode 
+                  ? '✨ Upload photo only - AI will extract all measurements automatically!' 
+                  : '📏 Upload photo for reference, enter measurements manually'}
+              </p>
             </div>
+            
+            {!imagePreview ? (
+              <div className="image-upload-area">
+                <input
+                  type="file"
+                  id="image-upload"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="image-upload" className="upload-label">
+                  <div className="upload-icon">📷</div>
+                  <div className="upload-text">Click to upload full-body photo</div>
+                  <div className="upload-subtext">
+                    {cvMode 
+                      ? 'Front-facing, full body visible, good lighting - AI will do the rest!' 
+                      : 'PNG, JPG up to 10MB'}
+                  </div>
+                </label>
+              </div>
+            ) : (
+              <div className="image-preview-container">
+                <img src={imagePreview} alt="Body preview" className="image-preview" />
+                <button type="button" onClick={removeImage} className="remove-image-btn">
+                  ✕ Remove Photo
+                </button>
+              </div>
+            )}
           </div>
 
-          <div className="form-section">
-            <h3>📏 Body Circumferences (cm)</h3>
+          {!cvMode && (
+            <div className="form-section">
+              <h3>📊 Basic Information</h3>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Age (years)</label>
+                  <input
+                    type="number"
+                    name="Age"
+                    value={formData.Age}
+                    onChange={handleChange}
+                    required
+                    min="1"
+                    max="120"
+                    step="1"
+                    placeholder="e.g., 25"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Weight (lbs)</label>
+                  <input
+                    type="number"
+                    name="Weight"
+                    value={formData.Weight}
+                    onChange={handleChange}
+                    required
+                    min="1"
+                    step="0.1"
+                    placeholder="e.g., 154.25"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Height (inches)</label>
+                  <input
+                    type="number"
+                    name="Height"
+                    value={formData.Height}
+                    onChange={handleChange}
+                    required
+                    min="1"
+                    step="0.1"
+                    placeholder="e.g., 67.75"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {cvMode && (
+            <div className="form-section cv-optional-section">
+              <h3>📊 Optional: Calibration Data</h3>
+              <p className="optional-note">Providing these improves accuracy by 20-30%</p>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Age (years) - Optional</label>
+                  <input
+                    type="number"
+                    name="Age"
+                    value={formData.Age}
+                    onChange={handleChange}
+                    min="1"
+                    max="120"
+                    step="1"
+                    placeholder="Optional - helps personalize advice"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Weight (lbs) - ⭐ Recommended</label>
+                  <input
+                    type="number"
+                    name="Weight"
+                    value={formData.Weight}
+                    onChange={handleChange}
+                    min="1"
+                    step="0.1"
+                    placeholder="Helps calibrate measurements"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Height (inches) - ⭐ Recommended</label>
+                  <input
+                    type="number"
+                    name="Height"
+                    value={formData.Height}
+                    onChange={handleChange}
+                    min="1"
+                    step="0.1"
+                    placeholder="Helps calibrate measurements"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!cvMode && (
+            <div className="form-section">
+              <h3>📏 Body Circumferences (cm)</h3>
             <div className="form-row">
               <div className="form-group">
                 <label>Neck</label>
@@ -291,10 +433,15 @@ function App() {
               </div>
             </div>
           </div>
+          )}
 
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? '🔄 Analyzing with AI...' : '🔬 Predict Body Fat'}
+          <button type="submit" className="submit-btn" disabled={loading || (cvMode && !imageData)}>
+            {loading ? '🔄 Analyzing with AI...' : cvMode ? '🤖 Analyze Photo with AI' : '🔬 Predict Body Fat'}
           </button>
+          
+          {cvMode && !imageData && (
+            <p className="cv-warning">⚠️ Please upload a photo to use AI Vision Mode</p>
+          )}
         </form>
 
         {error && (
@@ -306,6 +453,41 @@ function App() {
         {result && (
           <div className="result-card">
             <h2>🎯 AI Health Assessment Result</h2>
+            
+            {result.personalization_note && (
+              <div className="personalization-badge">
+                ✨ {result.personalization_note}
+              </div>
+            )}
+
+            {result.prediction_mode && (
+              <div className="prediction-mode-badge">
+                {result.prediction_mode === 'Computer Vision' ? '🤖' : '📝'} {result.prediction_mode}
+              </div>
+            )}
+
+            {result.cv_analysis && (
+              <div className="cv-analysis-box">
+                <h4>🤖 Computer Vision Analysis</h4>
+                {result.cv_analysis.body_analysis && (
+                  <div className="cv-body-analysis">
+                    <p><strong>Body Type:</strong> {result.cv_analysis.body_analysis.body_type}</p>
+                    <p><strong>Shoulder/Hip Ratio:</strong> {result.cv_analysis.body_analysis.shoulder_hip_ratio}</p>
+                    <p><strong>Waist/Hip Ratio:</strong> {result.cv_analysis.body_analysis.waist_hip_ratio}</p>
+                    <p><strong>CV Body Fat Estimate:</strong> {result.cv_analysis.body_analysis.estimated_body_fat}%</p>
+                  </div>
+                )}
+                {result.cv_analysis.cv_metrics && (
+                  <div className="cv-metrics">
+                    <p><strong>Pose Quality:</strong> {result.cv_analysis.cv_metrics.pose_quality}</p>
+                    <p><strong>Landmarks Detected:</strong> {result.cv_analysis.cv_metrics.landmarks_detected}</p>
+                  </div>
+                )}
+                {result.cv_analysis.note && (
+                  <p className="cv-note">{result.cv_analysis.note}</p>
+                )}
+              </div>
+            )}
             
             <div className="result-main">
               <div className="bodyfat-display">
@@ -402,7 +584,8 @@ function App() {
 
             {result.recommendations && result.recommendations.length > 0 && (
               <div className="recommendations-section">
-                <h3>📋 Personalized Action Plan</h3>
+                <h3>📋 Hyper-Personalized Action Plan</h3>
+                <p className="recommendations-subtitle">Based on your specific measurements and body composition</p>
                 <div className="recommendations-grid">
                   {result.recommendations.map((rec, index) => (
                     <div key={index} className="recommendation-card">

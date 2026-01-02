@@ -1,78 +1,72 @@
-# Body Fat Prediction App
+# 🏋️ AI Body Fat Prediction System
 
-This project is a web application that predicts body fat percentage based on user input of various body measurements. It consists of a Flask backend that handles the prediction logic and a React.js frontend for user interaction.
+AI-powered body fat prediction using Machine Learning, Deep Learning (TensorFlow), and Computer Vision (MediaPipe).
 
-## Project Structure
+## 🌟 Features
 
+- **Traditional ML Models:** Random Forest, Gradient Boosting, Linear Regression
+- **Deep Learning:** TensorFlow Neural Network (98.75% R² accuracy)
+- **Computer Vision:** MediaPipe pose detection for automatic measurement extraction
+- **Image-Only Prediction:** Upload photo, get instant body fat prediction
+- **Personalized Health Recommendations:** Age-based advice, nutrition, exercise plans
+- **Full-Stack Web App:** React.js frontend + Flask backend
+
+## 📊 Model Performance
+
+| Model | R² Score | MAE | RMSE |
+|-------|----------|-----|------|
+| Deep Neural Network | 0.9875 | 0.75% | 0.86% |
+| Random Forest | 0.9851 | 0.82% | 1.03% |
+| Gradient Boosting | 0.9802 | 0.95% | 1.19% |
+| Linear Regression | 0.9654 | 1.21% | 1.57% |
+
+## 🚀 Installation
+
+### Backend Setup
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+python app.py
 ```
-bodyfat-prediction-app
-├── backend
-│   ├── app.py                # Flask application code
-│   ├── requirements.txt      # Python dependencies
-│   ├── models
-│   │   └── model.pkl         # Pre-trained model for predictions
-│   ├── static                # Static files (images, CSS, JS)
-│   └── templates             # HTML templates for dynamic content
-├── frontend
-│   ├── public
-│   │   ├── index.html        # Main HTML file for React app
-│   │   └── manifest.json     # Metadata for the web application
-│   ├── src
-│   │   ├── App.js            # Main React component
-│   │   ├── components
-│   │   │   ├── Form.js       # User input form component
-│   │   │   └── Result.js     # Component to display prediction results
-│   │   ├── index.js          # Entry point for React app
-│   │   └── styles
-│   │       └── App.css       # Styles for the React application
-│   ├── package.json          # npm configuration file
-│   └── README.md             # Documentation for the frontend
-├── README.md                 # Documentation for the entire project
-└── .gitignore                # Files and directories to ignore by Git
+
+### Frontend Setup
+```bash
+cd frontend
+npm install
+npm start
 ```
 
-## Features
+## 🛠️ Technologies Used
 
-- **User Input**: Collects body measurements through a user-friendly form.
-- **Prediction**: Utilizes a pre-trained RandomForestRegressor model to predict body fat percentage.
-- **Health Assessment**: Provides health category, risk level, and recommendations based on the predicted body fat percentage.
-- **Logging**: Records user input data for future analysis and improvements.
+**Backend:**
+- Python 3.x
+- Flask
+- TensorFlow/Keras
+- scikit-learn
+- MediaPipe
+- OpenCV
+- pandas, numpy
 
-## Setup Instructions
+**Frontend:**
+- React.js
+- CSS3
 
-### Backend
+**Visualization:**
+- matplotlib
+- seaborn
 
-1. Navigate to the `backend` directory.
-2. Install the required Python packages:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Run the Flask application:
-   ```
-   python app.py
-   ```
+## 📸 Computer Vision Features
 
-### Frontend
+- Automatic body measurement extraction from photos
+- MediaPipe pose detection (33 landmarks)
+- No manual measurements needed
+- Works with single front-facing photo
 
-1. Navigate to the `frontend` directory.
-2. Install the required npm packages:
-   ```
-   npm install
-   ```
-3. Start the React application:
-   ```
-   npm start
-   ```
+## 📄 License
 
-## Usage
+Educational Project
 
-1. Open your web browser and go to `http://localhost:3000` to access the application.
-2. Enter your body measurements in the form and submit to receive your body fat prediction and health assessment.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
-
-## License
-
-This project is licensed under the MIT License.
+## 👨‍💻 Author
+SACIGA R V  - AI/ML Project
